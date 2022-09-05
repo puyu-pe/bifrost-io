@@ -1,0 +1,25 @@
+{
+  "name": "bifrost-socket",
+  "version": "1.0.0",
+  "description": "servidor generico de socket.io para todos los servicios de  Puyu",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puyu-pe/bifrost-socket.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/puyu-pe/bifrost-socket/issues"
+  },
+  "homepage": "https://github.com/puyu-pe/bifrost-socket#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "pm2": "^5.2.0",
+    "socket.io": "^4.5.2"
+  }
+}
