@@ -1,4 +1,4 @@
-# Bitfrost Socket.io 🌈
+# Bifrost Socket.io 🌈
 Servidor de socket io para todos los servicios de puyu  
 ![alt text](bifrost.png "Bifrost")
 ## Como funciona
