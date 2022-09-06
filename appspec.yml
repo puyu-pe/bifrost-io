@@ -14,9 +14,12 @@ hooks:
   ApplicationStop:
     - location: scripts/StopServer.sh
       timeout: 300
+      runas: admin
   AfterInstall:
     - location: scripts/InstallDependencies.sh
       timeout: 300
+      runas: admin
   ApplicationStart:
     - location: scripts/StartServer.sh
       timeout: 300
+      runas: admin

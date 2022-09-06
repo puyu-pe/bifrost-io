@@ -10,4 +10,4 @@ cd ~/$APPLICATION_NAME
 export NODE_ENV=$DEPLOYMENT_GROUP_NAME
 
 ## Run npm
-npm
+npm install
