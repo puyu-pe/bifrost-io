@@ -10,4 +10,4 @@ sudo systemctl stop nginx || true
 cd ~/$APPLICATION_NAME
 
 #Start node server
-npx pm2 stop
+npx pm2 stop default
