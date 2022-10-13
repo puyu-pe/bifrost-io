@@ -27,6 +27,10 @@ namespace.on("connection", socket => {
 	socket.on("item_operation", item => {
 		socket.broadcast.emit("update_item_operation", item);
 	});
+
+	socket.on("session_config", item => {
+		socket.broadcast.emit("update_session_config", item);
+	});
 });
 
 httpServer.listen(3001);
