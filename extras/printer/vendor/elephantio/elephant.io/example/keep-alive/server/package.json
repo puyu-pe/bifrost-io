@@ -1,0 +1,11 @@
+{
+    "name": "elephant-io_example_keep_alive",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "socket.io": "^4.5.0"
+    }
+}
