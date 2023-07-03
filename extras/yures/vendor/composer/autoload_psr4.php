@@ -6,7 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Oscar\\Yurest\\' => array($baseDir . '/src'),
     'ElephantIO\\' => array($vendorDir . '/elephantio/elephant.io/src'),
 );

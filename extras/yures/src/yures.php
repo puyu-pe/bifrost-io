@@ -45,7 +45,7 @@ $data = [
   'total' => 20.90,
 ];
 
-function connect_server($url): Client | null
+function connect_server($url)
 {
   $client = new Client(Client::engine(Client::CLIENT_4X, $url));
   if (!$client) return null;
