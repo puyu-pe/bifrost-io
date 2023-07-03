@@ -51,7 +51,7 @@ function configYuresSocket(namespace_io, namespace) {
 				const success = await memcached.set(
 					namespace,
 					JSON.stringify({ ...queue_object, ...memjs_object }),
-					{ expires: 300 }
+					{ expires: 1200 }
 				);
 
 				socket.emit("onsave", { success });
