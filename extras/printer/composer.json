@@ -1,7 +1,9 @@
 {
     "name": "oscar/printer",
     "require": {
-        "elephantio/elephant.io": "^4.2"
+        "elephantio/elephant.io": "^4.2",
+        "mike42/escpos-php": "^2.2",
+        "chillerlan/php-qrcode": "^3.4"
     },
     "autoload": {
         "psr-4": {

@@ -7,6 +7,11 @@ namespace Composer\Autoload;
 class ComposerStaticInit3751ef456941ce1b0856f4da810ecd79
 {
     public static $prefixLengthsPsr4 = array (
+        'c' => 
+        array (
+            'chillerlan\\Settings\\' => 20,
+            'chillerlan\\QRCode\\' => 18,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -15,6 +20,10 @@ class ComposerStaticInit3751ef456941ce1b0856f4da810ecd79
         array (
             'Oscar\\Printer\\' => 14,
         ),
+        'M' => 
+        array (
+            'Mike42\\' => 7,
+        ),
         'E' => 
         array (
             'ElephantIO\\' => 11,
@@ -22,6 +31,14 @@ class ComposerStaticInit3751ef456941ce1b0856f4da810ecd79
     );
 
     public static $prefixDirsPsr4 = array (
+        'chillerlan\\Settings\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/chillerlan/php-settings-container/src',
+        ),
+        'chillerlan\\QRCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/chillerlan/php-qrcode/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -29,6 +46,10 @@ class ComposerStaticInit3751ef456941ce1b0856f4da810ecd79
         'Oscar\\Printer\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'Mike42\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mike42/escpos-php/src/Mike42',
         ),
         'ElephantIO\\' => 
         array (

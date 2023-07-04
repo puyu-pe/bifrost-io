@@ -32,6 +32,7 @@ function configYuresSocket(namespace_io, namespace) {
 
 		socket.on("to_print", async (to_print_object) => {
 			try {
+				console.log(`Se recibio pakqete de yures - ${new Date().toString()}`)
 				const data = await memcached.get(namespace);
 
 				let queue_object = {};
@@ -88,6 +89,14 @@ function configPrinterSocket(namespace_io, namespace) {
 
 io.on("connection", (socket) => {
 
+	//a la escucha de yures
+	socket.on('connect-yures', (dataClient) => {
+		const namespace_io = io.of(dataClient.namespace);
+		console.log(`from YuRes: ${dataClient.namespace} connected! at ${new Date().toString()}`);
+		configYuresSocket(namespace_io, dataClient.namespace);
+		socket.emit("connect-yures-success", {});
+	});
+
 	// a la escucha del printer
 	socket.on('connect-printer', (dataClient) => {
 		const namespace_io = io.of(dataClient.namespace);
@@ -96,13 +105,6 @@ io.on("connection", (socket) => {
 		socket.emit("connect-printer-success", {});
 	})
 
-	//a la escucha de yures
-	socket.on('connect-yures', (dataClient) => {
-		const namespace_io = io.of(dataClient.namespace);
-		console.log(`from YuRes: ${dataClient.namespace} connected! at ${new Date().toString()}`);
-		configYuresSocket(namespace_io, dataClient.namespace);
-		socket.emit("connect-yures-success", {});
-	});
 
 	socket.on('disconnect', () => {
 		console.log("disconnected");
