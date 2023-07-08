@@ -3,7 +3,7 @@
         'name' => 'oscar/yurest',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '279ea2a25cabfd0bc9bbc456ad85ea2aeafc6b98',
+        'reference' => 'b603f4f8e7b988e3bbaed1dba768e0d9716faafb',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'oscar/yurest' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '279ea2a25cabfd0bc9bbc456ad85ea2aeafc6b98',
+            'reference' => 'b603f4f8e7b988e3bbaed1dba768e0d9716faafb',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

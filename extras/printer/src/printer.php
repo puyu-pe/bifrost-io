@@ -5,7 +5,7 @@ use ElephantIO\Client;
 use Oscar\Printer\SweetTicketPrinter;
 
 $COMPANIES = ["puyu", "mecato", "one-piece", "codideep", "almos", "company"];
-$RUCS = ["10164120517", "10164121611", "10164121611", "10164181826", "10009663318", "10004309451"];
+$RUCS = ["10164120517", "10164121611", "10164121614", "10164181826", "10009663318", "10004309451"];
 function printMessage($color, $message)
 {
     echo "\033[{$color}m{$message}\033[0m\n";
@@ -21,69 +21,63 @@ try {
 
     $index = 2; //random_int(1, 6) - 1;
     $namespace = "/$COMPANIES[$index]-$RUCS[$index]";
-    $client->emit("connect-printer", ["namespace" => $namespace]);
-    $client->wait("connect-printer-success");
-    $client->of($namespace);
-    printMessage("33", "Conexión establecida con el namespace: $namespace");
+    $client->emit("yures-printer", [
+        "namespace" => $namespace,
+        "clientname" => "PRINTER"
+    ]);
 
-    $packet = $client->wait("load-queue");
-    printing($packet, $client);
-
-    var_dump("aqui");
-    while (true) {
-        var_dump("aqui2");
-        $packet = $client->wait("onprint");
-        var_dump("aqui3");
-        $tickets = json_decode($packet->data->data_str);
-        var_dump($tickets);
-
-        $n_tickets = count($tickets);
-        echo "\n Recibio # $n_tickets";
-
-        if (is_array($tickets)) {
-            foreach ($tickets as $ticket) {
-                $STPrinter = new SweetTicketPrinter($ticket);
-                $STPrinter->printTicket();
-            }
-        } else {
-            $STPrinter = new SweetTicketPrinter($tickets);
-            $STPrinter->printTicket();
-        }
-
-        $client->emit("printed", ["namespace" => $packet->data->namespace]);
+    $packet = $client->wait("yures-printer-status");
+    if ($packet->data['status'] === "error") {
+        throw new Exception($packet->data['message']);
+    } else {
+        printMessage("33", $packet->data['message']);
     }
 
+    $client->of($namespace);
+
+    $client->emit("printer:start", []);
+    $packet = $client->wait("printer:load-queue");
+    printMessage("32", $packet->data['message'] . " status: " . $packet->data['status']);
+
+    printing($packet->data['data'], $client);
+    while (true) {
+        $client->of($namespace);
+        $packet = $client->wait("printer:to-print");
+        printing($packet->data["data"], $client);
+    }
+    // $client->close();
 } catch (\Throwable $th) {
     printMessage("31", $th->getMessage());
+    $client->close();
 }
 
-function printing($packet, $client)
+function printing($data, $client)
 {
-    foreach ($packet->data as $key => $value) {
-        $data = json_decode($value);
-        $created_at = $data->created_at;
-        $namespace = $data->namespace;
-        $tickets = json_decode($data->data_str);
+    foreach ($data as $id => $memObject) {
+        $register = json_decode($memObject);
+        $namespace = $register->namespace;
+        $created_at = $register->created_at;
+        $tickets = json_decode($register->tickets);
 
 
-        echo "$key:";
+        echo "\nticket id: $id";
         echo "\n\tcreated_at: $created_at";
         echo "\n\tnamespace: $namespace";
+        var_dump($tickets);
+        //TODO: conocer la verdadera estructura de los tickets
+        //$register->tickets es un objeto clave-valor para este ejemplo, depende de la estructura real de los datos
+        // $n_tickets = count(#tickets);
+        // echo "\n Recibido #$n_tickets";
+        // if (is_array($tickets)) {
+        //     foreach ($tickets as $ticket) {
+        //         $STPrinter = new SweetTicketPrinter($ticket);
+        //         $STPrinter->printTicket();
+        //     }
+        // } else {
+        //     $STPrinter = new SweetTicketPrinter($tickets);
+        //     $STPrinter->printTicket();
+        // }
 
-        $n_tickets = count($tickets);
-        echo "\n Recibio # $n_tickets";
-//        var_dump($response);
-
-        if (is_array($tickets)) {
-            foreach ($tickets as $ticket) {
-                $STPrinter = new SweetTicketPrinter($ticket);
-                $STPrinter->printTicket();
-            }
-        } else {
-            $STPrinter = new SweetTicketPrinter($tickets);
-            $STPrinter->printTicket();
-        }
-
-        $client->emit("printed", ["namespace" => $data->namespace]);
+        $client->emit("printer:printed", ["key" => $id]);
     }
 }

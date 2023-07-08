@@ -9,9 +9,9 @@ function printMessage($color, $message)
 }
 
 
-$index = 2;//random_int(1, 6) - 1;
+$index = 2; //random_int(1, 6) - 1;
 $COMPANIES = ["puyu", "mecato", "one-piece", "codideep", "almos", "company"];
-$RUCS = ["10164120517", "10164121611", "10164121611", "10164181826", "10009663318", "10004309451"];
+$RUCS = ["10164120517", "10164121611", "10164121614", "10164181826", "10009663318", "10004309451"];
 $data = [
   'ruc' => $RUCS[$index],
   'company' => $COMPANIES[$index],
@@ -55,8 +55,12 @@ function connect_server($url)
 
 function connect_namespace($namespace, $client)
 {
-  $client->emit('connect-yures', ["namespace" => $namespace]);
-  $client->wait('connect-yures-success');
+  $client->emit('yures-printer', [
+    "namespace" => $namespace,
+    "clientname" => "YURES"
+  ]);
+  $packet = $client->wait('yures-printer-status');
+  printMessage("33", $packet->data['message']);
 }
 
 try {
@@ -69,18 +73,17 @@ try {
   $client->of($namespace);
   printMessage("33", "Conexión establecida con el namespace: $namespace");
 
-  $client->emit('to_print', $data);
+  $client->emit('yures:save-print', $data);
 
-  if ($packet = $client->wait('onsave')) {
-    $success = (bool) $packet->data['success'];
+  if ($packet = $client->wait('yures:save-print-status')) {
+    $success =  $packet->data['success'] === "success";
     if ($success)
-      printMessage("34", "El servidor almaceno los datos satisfactoriamente");
+      printMessage("34", $packet->data['message']);
     else
-      printMessage("31", "El servidor no guardo los datos");
+      printMessage("31", $packet->data['message']);
   }
 
   $client->close();
-
 } catch (\Throwable $th) {
   printMessage("31", $th->getMessage());
 }

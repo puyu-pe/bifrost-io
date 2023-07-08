@@ -3,7 +3,7 @@
         'name' => 'oscar/printer',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '6e26e362d8c2ef788bc2ca902d36d04f0cda730c',
+        'reference' => 'b603f4f8e7b988e3bbaed1dba768e0d9716faafb',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -49,7 +49,7 @@
         'oscar/printer' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '6e26e362d8c2ef788bc2ca902d36d04f0cda730c',
+            'reference' => 'b603f4f8e7b988e3bbaed1dba768e0d9716faafb',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
