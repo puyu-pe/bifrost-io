@@ -6,7 +6,7 @@ const { instrument } = require('@socket.io/admin-ui');
 const { BifrostPrinterStorage } = require('./printer-storage');
 
 const EXPIRES_TIME_FROM_DATA = 20 * 60;
-const MAX_LISTENERS = 15;
+const MAX_LISTENERS = 20;
 const SERVER_PORT = 3001;
 
 const httpServer = createServer();
@@ -31,6 +31,7 @@ instrument(io, {
 
 const storage = new BifrostPrinterStorage(EXPIRES_TIME_FROM_DATA);
 
+const setNamespace = new Set();
 io.on("connection", socket => {
 	log(`Cliente conectado: \n\tip: ${socket.handshake.address} \n\tsocket_id:${socket.id}`, "io.on('connection')");
 
@@ -44,8 +45,11 @@ io.on("connection", socket => {
 			return;
 		}
 		log(`El Cliente ${data.clientname || "No Specified"} conectado a ${data.namespace} `, 'socket.on("yures-printer")');
-		const namespace = io.of(data.namespace);
-		configWorkflowYuresPrinter(namespace);
+		if (!setNamespace.has(data.namespace)) {
+			const namespace = io.of(data.namespace);
+			configWorkflowYuresPrinter(namespace);
+			setNamespace.add(data.namespace);
+		}
 		socket.emit("yures-printer-status", {
 			message: "Namespace configurado exitosamente",
 			status: "success",
@@ -69,25 +73,25 @@ function configWorkflowYuresPrinter(namespace) {
 				if (storageInfo.success) {
 					log(`Se almaceno información para imprimir en ${namespace.name}`, "namespace-event: yures:save-print");
 					namespace.emit("printer:to-print", { data: storageInfo.memObject });
-					socket.emit("yures:save-print-status", { message: "Impresion almacenada correctamente", success: "success" });
+					namespace.emit("yures:save-print-status", { message: "Impresion almacenada correctamente", success: "success" });
 				}
 				else {
 					log(`Danger:\n\t hubo un fallo al almacenar información en ${namespace.name}`, "namespace-event: yures:save-print");
-					socket.emit("yures:save-print-status", { message: "No se persistio la información", success: "error" });
+					namespace.emit("yures:save-print-status", { message: "No se persistio la información", success: "error" });
 				}
 			} catch (error) {
 				log(`error en ejecución en : ${error.toString()}`, "namespace-event: yures:save-print");
-				socket.emit("yures:save-print-status", { message: "El servidor a fallado, vuelve a intentarlo despues.", success: "error" });
+				namespace.emit("yures:save-print-status", { message: "El servidor a fallado, vuelve a intentarlo despues.", success: "error" });
 			}
 		})
 
 		socket.on("printer:start", async (dataFromPrinter) => {
 			try {
 				const queue = await storage.getQueue(namespace.name);
-				socket.emit("printer:load-queue", { message: "Se recupero los datos correctamente", data: queue, status: "success" });
+				namespace.emit("printer:load-queue", { message: "Se recupero los datos correctamente", data: queue, status: "success" });
 			} catch (error) {
 				log(`error en ejecución : ${error.toString()}`, "namespace-event: printer:start");
-				socket.emit("printer:load-queue", { message: `El servidor tuvo un fallo: ${error.toString()}`, data: {}, status: "error" });
+				namespace.emit("printer:load-queue", { message: `El servidor tuvo un fallo: ${error.toString()}`, data: {}, status: "error" });
 			}
 		})
 
