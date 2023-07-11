@@ -9,7 +9,17 @@ const EXPIRES_TIME_FROM_DATA = 20 * 60;
 const MAX_LISTENERS = 20;
 const SERVER_PORT = 3001;
 
-const httpServer = createServer();
+const httpServer = createServer((req, res) => {
+	if (req.method === 'GET') {
+		res.statusCode = 200;
+		res.setHeader('Content-Type', 'text/plain');
+
+		res.end('Bifrost online');
+	} else {
+		res.statusCode = 405;
+		res.end();
+	}
+});
 const io = new Server(httpServer, {
 	cors: {
 		origin: [
