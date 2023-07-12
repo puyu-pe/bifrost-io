@@ -4,6 +4,7 @@ const { createServer } = require('http');
 const { Server, Namespace } = require('socket.io');
 const { instrument } = require('@socket.io/admin-ui');
 const { BifrostPrinterStorage } = require('./printer-storage');
+const { YuresWaiterService , yuresWaiterNamespacePattern } = require('./services/yures-waiter-service');
 
 const EXPIRES_TIME_FROM_DATA = 20 * 60;
 const MAX_LISTENERS = 20;
@@ -39,6 +40,11 @@ instrument(io, {
 });
 
 
+const yuresWaiterNamespace = io.of(yuresWaiterNamespacePattern);
+yuresWaiterNamespace.on("connection", YuresWaiterService)
+
+
+//TODO: modularizar a un servicio seperado
 const storage = new BifrostPrinterStorage(EXPIRES_TIME_FROM_DATA);
 const configuredNamespaces = new Set();
 
@@ -124,6 +130,9 @@ function configWorkflowYuresPrinter(namespace, clientname) {
 
 	})
 }
+
+
+
 
 httpServer.on("onerror", (error) => {
 	log(`A ocurrido un error en el servidor: ${error}`, "httpServer.on('onerror')");
