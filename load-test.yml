@@ -1,0 +1,63 @@
+# load-test.yml
+config:
+  target: "https://bifrost-io.puyu.pe/"
+  phases:
+    #fase de calentamiento
+    - duration: 30 
+      arrivalRate: 10
+    # fases de carga pesada
+    - duration: 60 
+      arrivalRate: 60
+    - duration: 60
+      arrivalRate: 90
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: Un usuario YURES se conecta al servidor
+    engine: socketio-v3
+    flow:
+      # esperar 1 segundo la actualización del websocket
+      - think: 1
+
+      # Conectarse a yures-printer
+      - emit:
+          channel: "yures-printer"
+          data:
+            clientname: "YURES"
+            namespace: "{{ namespace }}"
+
+      - namespace: "{{ namespace }}"
+        emit:
+          channel: "yures:save-print"
+          data: ["data1", "data2"]
+
+
+
+  - name: Un usuario PRINTER  se conecta al servidor
+    engine: socketio-v3
+    flow:
+      # esperar 1 segundo la actualización del websocket
+      - think: 1
+
+      # Conectarse a yures-printer
+      - emit:
+          channel: "yures-printer"
+          data:
+            clientname: "PRINTER"
+            namespace: "{{ namespace }}"
+
+      # Iniciar impresora y solicitar cola de impresión
+      - namespace: "{{ namespace }}"
+        emit:
+          channel: "printer:start"
+
+      # Indicar al servidor que se imprimio correctamente
+      - namespace: "{{ namespace }}"
+        emit:
+          channel: "pinter:printed"
+          data:
+            key: "423042324"
+
+      # no hacer nada por 5 segundos y desconectar
+      - think: 5
