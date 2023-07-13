@@ -1,0 +1,72 @@
+# load-test.yml
+config:
+  # target: "http://localhost:3001"
+  target: "https://bifrost-io.puyu.pe/"
+  phases:
+    # fase de calentamiento
+    - duration: 30 
+      arrivalRate: 4
+    # fases de carga pesada
+    - duration: 60 
+      arrivalRate: 60
+    - duration: 60
+      arrivalRate: 90
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: Un usuario YURES se conecta al servidor
+    engine: socketio-v3
+    flow:
+      # esperar 2 segundo la actualización del websocket
+      - think: 2
+
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "yures:save-print"
+          data: ["data1", "data2"]
+
+      # no hacer nada durante 5 segundos
+      - think: 5
+
+  - name: Un usuario PRINTER  se conecta al servidor
+    engine: socketio-v3
+    flow:
+      # esperar 1 segundo la actualización del websocket
+      - think: 1
+
+      # Iniciar impresora y solicitar cola de impresión
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "printer:start"
+
+      # Indicar al servidor que se imprimio correctamente
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "pinter:printed"
+          data:
+            key: "423042324"
+
+      # no hacer nada durante 5 segundos
+      - think: 5
+
+  - name: Un Cliente YURES-WAITER modifica el estado de una mesa
+    engine: socketio-v3
+    flow: 
+      - think: 1
+
+      # Modificar el estado de una mesa
+      - namespace: "/yures:waiter-{{namespace}}"
+        emit: 
+          channel: "change-status-table"
+          data: 
+            status: "active"
+
+      # Modificar el estado de una mesa
+      - namespace: "/yures:waiter-{{namespace}}"
+        emit: 
+          channel: "change-status-table"
+          data: 
+            status: "desactive"
+
+      - think: 5
