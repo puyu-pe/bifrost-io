@@ -1,10 +1,11 @@
 # load-test.yml
 config:
+  # target: "http://localhost:3001"
   target: "https://bifrost-io.puyu.pe/"
   phases:
-    #fase de calentamiento
+    # fase de calentamiento
     - duration: 30 
-      arrivalRate: 10
+      arrivalRate: 4
     # fases de carga pesada
     - duration: 60 
       arrivalRate: 60
@@ -17,22 +18,16 @@ scenarios:
   - name: Un usuario YURES se conecta al servidor
     engine: socketio-v3
     flow:
-      # esperar 1 segundo la actualización del websocket
-      - think: 1
+      # esperar 2 segundo la actualización del websocket
+      - think: 2
 
-      # Conectarse a yures-printer
-      - emit:
-          channel: "yures-printer"
-          data:
-            clientname: "YURES"
-            namespace: "{{ namespace }}"
-
-      - namespace: "{{ namespace }}"
+      - namespace: "/yures:printer-{{ namespace }}"
         emit:
           channel: "yures:save-print"
           data: ["data1", "data2"]
 
-
+      # no hacer nada durante 5 segundos
+      - think: 5
 
   - name: Un usuario PRINTER  se conecta al servidor
     engine: socketio-v3
@@ -40,24 +35,38 @@ scenarios:
       # esperar 1 segundo la actualización del websocket
       - think: 1
 
-      # Conectarse a yures-printer
-      - emit:
-          channel: "yures-printer"
-          data:
-            clientname: "PRINTER"
-            namespace: "{{ namespace }}"
-
       # Iniciar impresora y solicitar cola de impresión
-      - namespace: "{{ namespace }}"
+      - namespace: "/yures:printer-{{ namespace }}"
         emit:
           channel: "printer:start"
 
       # Indicar al servidor que se imprimio correctamente
-      - namespace: "{{ namespace }}"
+      - namespace: "/yures:printer-{{ namespace }}"
         emit:
           channel: "pinter:printed"
           data:
             key: "423042324"
 
-      # no hacer nada por 5 segundos y desconectar
+      # no hacer nada durante 5 segundos
+      - think: 5
+
+  - name: Un Cliente YURES-WAITER modifica el estado de una mesa
+    engine: socketio-v3
+    flow: 
+      - think: 1
+
+      # Modificar el estado de una mesa
+      - namespace: "/yures:waiter-{{namespace}}"
+        emit: 
+          channel: "change-status-table"
+          data: 
+            status: "active"
+
+      # Modificar el estado de una mesa
+      - namespace: "/yures:waiter-{{namespace}}"
+        emit: 
+          channel: "change-status-table"
+          data: 
+            status: "desactive"
+
       - think: 5

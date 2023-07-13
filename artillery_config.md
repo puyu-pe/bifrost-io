@@ -7,7 +7,7 @@ npm install artillery artillery-engine-socketio-v3
 Ejecutar el siguiente comando:
 ```
 npx artillery run \
-    --variables '{ "namespace": ["/puyu-432423232", "/codideep-23432423", "/pollo-34234234","/yubis-234234234","/almos-324234324","/puy-432423232", "/codidee-23432423", "/poll-34234234","/ybis-234234234","/amos-324234324"]}' \
+    --variables '{ "namespace": ["432423232-ab", "23432423-ac", "34234234-ad","234234234-ae","324234324-af","432423232-ag", "23432423-ak", "34234234-al","234234234-am","324234324-an"]}' \
     load-test.yml
 ```
 nota: la ejecución del mismo puede tardar unos minutos, influye tambien la duración de cada fase
