@@ -2,7 +2,7 @@ const { Socket } = require('socket.io');
 const { BifrostPrinterStorage } = require('../memcached/printer-storage');
 const { ConsoleLogger } = require('../util/console-logger');
 
-const EXPIRES_TIME_FROM_DATA = 20 * 60;
+const EXPIRES_TIME_FROM_DATA = 300 * 60;
 const storage = new BifrostPrinterStorage(EXPIRES_TIME_FROM_DATA);
 const logger = new ConsoleLogger("YURES PRINTER SERVICE");
 
