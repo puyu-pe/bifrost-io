@@ -22,7 +22,7 @@ class BifrostPrinterStorage {
       JSON.stringify({ ...queue, ...memObject }),
       { expires: this.timeExpires }
     );
-    return { success, memObject };
+    return { success, key: created_at, memObject };
   }
 
   async dequeue(namespace, created_at) {

@@ -24,7 +24,10 @@ function YuresPrinterService(socket) {
         logger.info(
           `Nuevo item guardado en cola de impresión en ${namespace.name}`
         );
-        namespace.emit("printer:to-print", { data: storageInfo.memObject });
+        namespace.emit("printer:to-print", {
+					message: "Se obtuvo un ticket para imprimir",
+					data: storageInfo.memObject,
+        });
         namespace.emit("yures:save-print-status", {
           message: "Impresion almacenada correctamente",
           success: "success",
