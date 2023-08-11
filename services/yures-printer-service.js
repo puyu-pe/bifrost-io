@@ -1,19 +1,17 @@
 const { Socket } = require("socket.io");
-const { BifrostPrinterStorage } = require("../memcached/printer-storage");
 const { ConsoleLogger } = require("../util/console-logger");
+const { BifrostManagerStorage } = require("../util/manager-storage");
 
 const EXPIRES_TIME_FROM_DATA = 300 * 60;
-const storage = new BifrostPrinterStorage(EXPIRES_TIME_FROM_DATA);
+const managerStorage = new BifrostManagerStorage(EXPIRES_TIME_FROM_DATA);
 const logger = new ConsoleLogger("YURES PRINTER SERVICE");
-
-const { Mutex } = require("async-mutex");
-const mutex = new Mutex();
 
 /**
  * @param {Socket} socket
  */
 function YuresPrinterService(socket) {
   const namespace = socket.nsp;
+	const storage = managerStorage.provideStorage(namespace.name);
 
   logger.info(`Nueva Conexión en ${namespace.name}`);
 
@@ -25,8 +23,8 @@ function YuresPrinterService(socket) {
           `Nuevo item guardado en cola de impresión en ${namespace.name}`
         );
         namespace.emit("printer:to-print", {
-					message: "Se obtuvo un ticket para imprimir",
-					data: storageInfo.memObject,
+          message: "Se obtuvo un ticket para imprimir",
+          data: storageInfo.memObject,
         });
         namespace.emit("yures:save-print-status", {
           message: "Impresion almacenada correctamente",
@@ -76,25 +74,27 @@ function YuresPrinterService(socket) {
   });
 
   socket.on("printer:printed", async (data) => {
-    await mutex.runExclusive(async () => {
-      try {
-        const success = await storage.dequeue(namespace.name, data.key);
-        if (success) {
-          logger.info(
-            `Se libero un ticket de la cola de impresión en ${namespace.name}`
-          );
-        } else {
-          logger.warning(
-            `No se pudo liberar un ticket de la cola de impresión en ${namespace.name}`
-          );
-        }
-      } catch (error) {
-        logger.error(
-          `Error del servidor en ejecución en ${namespace.name}: ${error}`
+    try {
+      const success = await storage.dequeue(namespace.name, data.key);
+      if (success) {
+        logger.info(
+          `Se libero un ticket de la cola de impresión en ${namespace.name}`
+        );
+      } else {
+        logger.warning(
+          `No se pudo liberar un ticket de la cola de impresión en ${namespace.name}`
         );
       }
-    });
+    } catch (error) {
+      logger.error(
+        `Error del servidor en ejecución en ${namespace.name}: ${error}`
+      );
+    }
   });
+
+	socket.on("disconnect", () => {
+		logger.info(`Hubo una desconexión en ${namespace.name}`);
+	});
 }
 
 // yures:printer-{ruc}-{sufijo_sucursal}

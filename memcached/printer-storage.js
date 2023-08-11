@@ -1,40 +1,48 @@
 const { Client } = require("memjs");
 
+const { Mutex } = require("async-mutex");
+
 class BifrostPrinterStorage {
   constructor(timeExpires) {
     this.memcached = Client.create();
     this.timeExpires = timeExpires;
+    this.enqueueMutex = new Mutex();
+    this.dequeueMutex = new Mutex();
   }
 
   async enqueue(namespace, dataToPrint) {
-    const queue = await this.getQueue(namespace);
-    const created_at = Date.now();
-    const register = {
-      tickets: JSON.stringify(dataToPrint),
-      created_at: new Date(created_at).toString(),
-      namespace,
-    };
-    const memObject = {};
-    memObject[`${created_at}`] = JSON.stringify(register);
-    //devuelve true si almaceno correctamente la data
-    const success = await this.memcached.set(
-      namespace,
-      JSON.stringify({ ...queue, ...memObject }),
-      { expires: this.timeExpires }
-    );
-    return { success, key: created_at, memObject };
+    return this.enqueueMutex.runExclusive(async () => {
+      const queue = await this.getQueue(namespace);
+      const created_at = Date.now();
+      const register = {
+        tickets: JSON.stringify(dataToPrint),
+        created_at: new Date(created_at).toString(),
+        namespace,
+      };
+      const memObject = {};
+      memObject[`${created_at}`] = JSON.stringify(register);
+      //devuelve true si almaceno correctamente la data
+      const success = await this.memcached.set(
+        namespace,
+        JSON.stringify({ ...queue, ...memObject }),
+        { expires: this.timeExpires }
+      );
+      return { success, key: created_at, memObject };
+    });
   }
 
   async dequeue(namespace, created_at) {
-    const queue = await this.getQueue(namespace);
-    const existsForDelete = queue.hasOwnProperty(created_at);
-    if (existsForDelete) {
-      delete queue[created_at];
-      this.memcached.set(namespace, JSON.stringify({ ...queue }), {
-        expires: this.timeExpires,
-      });
-    }
-    return existsForDelete;
+    return this.dequeueMutex.runExclusive(async () => {
+      const queue = await this.getQueue(namespace);
+      const existsForDelete = queue.hasOwnProperty(created_at);
+      if (existsForDelete) {
+        delete queue[created_at];
+        await this.memcached.set(namespace, JSON.stringify({ ...queue }), {
+          expires: this.timeExpires,
+        });
+      }
+      return existsForDelete;
+    });
   }
 
   async getQueue(namespace) {
