@@ -10,4 +10,12 @@ Se levanta un contenedor que escuchara por el puerto 3001, y devolvera el evento
 
 
 ### Ejecutar en Production
-Funcionara en una instancia Ec2 independiente, que funcionara por el momento detras del load balancer de yubiz por el puerto `3001`
+1. Primero instalar las dependencias necesarias
+```
+npm install --only=production 
+```
+2. Levantar el servidor en pm2
+```
+npx pm2 start 
+```
+
