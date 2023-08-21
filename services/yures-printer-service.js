@@ -11,7 +11,7 @@ const logger = new ConsoleLogger("YURES PRINTER SERVICE");
  */
 function YuresPrinterService(socket) {
   const namespace = socket.nsp;
-	const storage = managerStorage.provideStorage(namespace.name);
+  const storage = managerStorage.provideStorage(namespace.name);
 
   logger.info(`Nueva Conexión en ${namespace.name}`);
 
@@ -53,14 +53,21 @@ function YuresPrinterService(socket) {
   socket.on("printer:start", async (dataFromPrinter) => {
     try {
       const queue = await storage.getQueue(namespace.name);
+      const numberOfItemsPrintQueue = Object.keys(queue).length;
       namespace.emit("printer:load-queue", {
-        message: "Se recupero los datos correctamente",
+        message: `Se obtuvo ${numberOfItemsPrintQueue} elementos de la cola de impresión`,
         data: queue,
         status: "success",
       });
-      logger.info(
-        `Solicitud exitosa de extración de cola de impresión en ${namespace.name}`
-      );
+      if (numberOfItemsPrintQueue > 0) {
+        logger.info(
+          `Se solicito cola de impresión y se respondio con ${numberOfItemsPrintQueue} tickets en ${namespace.name}`
+        );
+      } else {
+        logger.info(
+          `Se solicito cola de impresión, pero no hay tickets en cola. ${namespace.name}`
+        );
+      }
     } catch (error) {
       namespace.emit("printer:load-queue", {
         message: `El servidor tuvo un fallo: ${error.toString()}`,
@@ -92,9 +99,9 @@ function YuresPrinterService(socket) {
     }
   });
 
-	socket.on("disconnect", () => {
-		logger.info(`Hubo una desconexión en ${namespace.name}`);
-	});
+  socket.on("disconnect", () => {
+    logger.info(`Hubo una desconexión en ${namespace.name}`);
+  });
 }
 
 // yures:printer-{ruc}-{sufijo_sucursal}
