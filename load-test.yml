@@ -43,7 +43,7 @@ scenarios:
       # Indicar al servidor que se imprimio correctamente
       - namespace: "/yures:printer-{{ namespace }}"
         emit:
-          channel: "pinter:printed"
+          channel: "printer:printed"
           data:
             key: "423042324"
 
