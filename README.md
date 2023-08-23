@@ -40,8 +40,10 @@ Nota: Seguir las mimsas instrucciones para un entorno de producción y desarroll
 
 1. Instalar dependencias 
 ```
-npm install
+npm ci
 ```
+
+Nota: preferir npm ci antes que npm install issue #20 bifrost project
 
 2. Levantar el servidor en pm2
 ```
