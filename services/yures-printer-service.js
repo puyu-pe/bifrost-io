@@ -105,7 +105,7 @@ function YuresPrinterService(socket) {
 }
 
 // yures:printer-{ruc}-{sufijo_sucursal}
-const yuresPrinterNamespacePattern = /^\/yures:printer-(\d{11})(-\d{1})?$/gm;
+const yuresPrinterNamespacePattern = /^\/yures:printer-(\d{11})(-\d{1})?$/m;
 
 module.exports = {
   YuresPrinterService,

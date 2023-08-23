@@ -18,7 +18,7 @@ function YuresWaiterService(socket) {
 }
 
 // yures:waiter-{ruc}-{sufijo_sucursal}
-const yuresWaiterNamespacePattern = /^\/yures:waiter-(\d{11})(-\d{1})?$/gm;
+const yuresWaiterNamespacePattern = /^\/yures:waiter-(\d{11})(-\d{1})?$/m;
 
 module.exports = {
   YuresWaiterService,
