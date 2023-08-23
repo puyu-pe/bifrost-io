@@ -1,3 +1,10 @@
+# Instalar Artillery
+```
+npm install -g artillery@latest
+npm install -g artillery-engine-socketio-v3@latest
+```
+Nota: Se recomienda no descargar artillery en un entorno de producción
+
 # 1. Conceptos Artillery
 
 ## Funcionamiento
