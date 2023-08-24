@@ -56,5 +56,5 @@ npx pm2 logs
 ```
 
 ### Pruebas de estres
-Para las pruebas de estres revisar el archivo artillery-doc.md 
+Para las pruebas de estres revisar el archivo artillery-docs.md 
 que esta en la carpeta test/stress en el actual proyecto
