@@ -52,6 +52,11 @@ class BifrostPrinterStorage {
     return queue;
   }
 
+  async numberItemsInQueue(namespace) {
+    const queue = await this.getQueue(namespace);
+    return Object.keys(queue).length;
+  }
+
   async emptyPrintQueue(namespace) {
     return await this.memcached.delete(namespace);
   }

@@ -47,6 +47,11 @@ function YuresPrinterService(socket) {
       logger.error(
         `Fallo en ejecución en el servidor en ${namespace.name}: ${error}`
       );
+    } finally {
+      namespace.emit(
+        "printer:number-items-queue",
+        await storage.numberItemsInQueue(namespace.name)
+      );
     }
   });
 
@@ -77,6 +82,11 @@ function YuresPrinterService(socket) {
       logger.error(
         `Solicitud FALLIDA de extración de cola de impresión en ${namespace.name}`
       );
+    } finally {
+      namespace.emit(
+        "printer:number-items-queue",
+        await storage.numberItemsInQueue(namespace.name)
+      );
     }
   });
 
@@ -95,6 +105,11 @@ function YuresPrinterService(socket) {
     } catch (error) {
       logger.error(
         `Error del servidor en ejecución en ${namespace.name}: ${error}`
+      );
+    } finally {
+      namespace.emit(
+        "printer:number-items-queue",
+        await storage.numberItemsInQueue(namespace.name)
       );
     }
   });
