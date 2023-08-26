@@ -114,6 +114,28 @@ function YuresPrinterService(socket) {
     }
   });
 
+  socket.on("printer:release-queue", async () => {
+    try {
+      const success = await storage.emptyPrintQueue(namespace.name);
+      if (success) {
+        logger.info(`Se libero la cola de impresión para: ${namespace.name}`);
+      } else {
+        logger.warn(
+          `Memcached no pudo liberar la cola de impresión para ${namespace.name}`
+        );
+      }
+    } catch (error) {
+      logger.error(
+        `No se pudo liberar cola de impresión en ${namespace.name} error: ${error}`
+      );
+    } finally {
+      namespace.emit(
+        "printer:number-items-queue",
+        await storage.numberItemsInQueue(namespace.name)
+      );
+    }
+  });
+
   socket.on("disconnect", () => {
     logger.info(`Hubo una desconexión en ${namespace.name}`);
   });
