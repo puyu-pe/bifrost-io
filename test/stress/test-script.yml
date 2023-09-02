@@ -1,0 +1,183 @@
+config:
+  # target: "http://localhost:3001"
+  target: "https://bifrost-io.puyu.pe"
+  payload:
+    path: "namespaces.csv"
+    fields:
+      - "namespace"
+  phases:
+    # fases de calentamiento
+    - duration: 120 
+      arrivalRate: 2
+      rampTo: 8
+    - duration: 120 
+      arrivalRate: 8
+      rampTo: 15
+    - duration: 120 
+      arrivalRate: 15
+      rampTo: 20
+    # fases de carga pesada
+    - duration: 360 
+      arrivalRate: 25
+      rampTo: 50
+    - duration: 360
+      arrivalRate: 50
+      rampTo: 80
+    # fases de bajada
+    - duration: 120
+      arrivalRate: 60
+    - duration: 120
+      arrivalRate: 30
+
+  engines:
+    socketio-v3: {}
+
+scenarios:
+  - name: Un usuario YURES emite una factura
+    engine: socketio-v3
+    flow:
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "yures:save-print"
+          data:
+            type: invoice
+            times: 1
+            printer:
+              type: ethernet
+              name_system: 192.168.1.245
+              port: "9100"
+            data:
+              business:
+                comercialDescription:
+                  type: text
+                  value: REY DE LOS ANDES
+                description: EMPRESA DE TRANSPORTES REY DE LOS ANDES S.A.C.
+                additional:
+                  - RUC 20450523381 AGENCIA ABANCAY
+                  - DIRECCIÓN : Av. Brasil S/N
+                  - TELÉFONO : 989290733
+              document:
+                description: Boleta de Venta\r ELECTRONICA
+                indentifier: B001 - 00000071
+              customer:
+                - ADQUIRIENTE
+                - DNI: 20564379248
+                - FASTWORKX SRL
+                - AV CANADA N 159 ABANCAY ABANCAY APURIMAC
+              additional:
+                - FECHA EMISIÓN : 01/10/2019 14:51:26
+                - MONEDA : SOLES
+                - USUARIO :
+              items:
+                - description:
+                    - Ruta : ABANCAY-CHALHUANCA
+                    - Embarque : ABANCAY
+                    - Destino : CHALHUANCA
+                    - Asiento : 2
+                    - Pasajero : EMERSON ÑAHUINLLA VELASQUEZ
+                    - DNI : 70930383
+                    - F. Viaje : 01/10/2019 02:00 PM
+                  totalPrice: "9.00"
+              amounts:
+                Operacion no gravada: "9.00"
+                IGV: 0
+                Total: "9.00"
+              finalMessage:
+                - REPRESENTACIÓN IMPRESA COMPROBANTE ELECTRÓNICO
+                - PARA CONSULTAR EL DOCUMENTO VISITA NEXUS
+                - HTTPS://NEXUS.FASTWORKX.COM/20450523381
+                - RESUMEN: null
+                - ""
+                - POR FASTWORKX S.R.L. - PERÚ
+              stringQR: "20450523381|03|B001 - 00000071|0|9.00|01/10/2019|6|[object Object]|"
+
+  - name: Un usuario YURES emite una boleta
+    engine: socketio-v3
+    flow:
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "yures:save-print"
+          data:
+            type: ticket
+            times: 1
+            printer:
+              type: ethernet
+              name_system: 192.168.1.245
+              port: "9100"
+            data:
+              business:
+                comercialDescription:
+                  type: text
+                  value: REY DE LOS ANDES
+                description: EMPRESA DE TRANSPORTES REY DE LOS ANDES S.A.C.
+                additional:
+                  - RUC 20450523381 AGENCIA ABANCAY
+                  - DIRECCIÓN : Av. Brasil S/N
+                  - TELÉFONO : 989290733
+              document:
+                description: Boleta de Venta\r ELECTRONICA
+                indentifier: B001 - 00000071
+              customer:
+                - ADQUIRIENTE
+                - DNI: 20564379248
+                - FASTWORKX SRL
+                - AV CANADA N 159 ABANCAY ABANCAY APURIMAC
+              additional:
+                - FECHA EMISIÓN : 01/10/2019 14:51:26
+                - MONEDA : SOLES
+                - USUARIO :
+              items:
+                - description:
+                    - Ruta : ABANCAY-CHALHUANCA
+                    - Embarque : ABANCAY
+                    - Destino : CHALHUANCA
+                    - Asiento : 2
+                    - Pasajero : EMERSON ÑAHUINLLA VELASQUEZ
+                    - DNI : 70930383
+                    - F. Viaje : 01/10/2019 02:00 PM
+                  totalPrice: "9.00"
+              amounts:
+                Operacion no gravada: "9.00"
+                IGV: 0
+                Total: "9.00"
+              finalMessage:
+                - REPRESENTACIÓN IMPRESA COMPROBANTE ELECTRÓNICO
+                - PARA CONSULTAR EL DOCUMENTO VISITA NEXUS
+                - HTTPS://NEXUS.FASTWORKX.COM/20450523381
+                - RESUMEN: null
+                - ""
+                - POR FASTWORKX S.R.L. - PERÚ
+              stringQR: "20450523381|03|B001 - 00000071|0|9.00|01/10/2019|6|[object Object]|"
+
+  - name: Un usuario PRINTER solicita cola de impresión e imprime
+    engine: socketio-v3
+    flow:
+      # Iniciar impresora y solicitar cola de impresión
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "printer:start"
+
+      # Indicar al servidor que se imprimio correctamente
+      - namespace: "/yures:printer-{{ namespace }}"
+        emit:
+          channel: "printer:printed"
+          data:
+            key: "423042324"
+
+  - name: Un Cliente YURES-WAITER modifica el estado de una mesa
+    engine: socketio-v3
+    flow: 
+
+      # Modificar el estado de una mesa
+      - namespace: "/yures:waiter-{{namespace}}"
+        emit: 
+          channel: "change-status-table"
+          data: 
+            status: "active"
+
+      # Modificar el estado de una mesa
+      - namespace: "/yures:waiter-{{namespace}}"
+        emit: 
+          channel: "change-status-table"
+          data: 
+            status: "desactive"
