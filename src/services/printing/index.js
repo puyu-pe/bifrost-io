@@ -4,7 +4,7 @@ const { BifrostManagerStorage } = require("../../storage/memcached/manager");
 
 const EXPIRES_TIME_FROM_DATA = 300 * 60;
 const managerStorage = new BifrostManagerStorage(EXPIRES_TIME_FROM_DATA);
-const logger = new ConsoleLogger("YURES PRINTER SERVICE");
+const logger = new ConsoleLogger("PRINTER SERVICE");
 
 /**
  * @param {Socket} socket
@@ -13,15 +13,14 @@ function YuresPrinterService(socket) {
   const namespace = socket.nsp;
   const storage = managerStorage.provideStorage(namespace.name);
 
-  logger.info(`Nueva Conexión en ${namespace.name}`);
+  logger.debug([
+    `namespace: ${namespace.name}`
+  ], "Nueva conexión")
 
   socket.on("yures:save-print", async (dataToPrint) => {
     try {
       const storageInfo = await storage.enqueue(namespace.name, dataToPrint);
       if (storageInfo.success) {
-        logger.info(
-          `Nuevo item guardado en cola de impresión en ${namespace.name}`
-        );
         namespace.emit("printer:to-print", {
           message: "Se obtuvo un ticket para imprimir",
           data: storageInfo.memObject,
@@ -31,27 +30,28 @@ function YuresPrinterService(socket) {
           success: "success",
         });
       } else {
-        logger.warning(
-          `No se pudo persistir item en la cola de impresión en ${namespace.name}`
-        );
         namespace.emit("yures:save-print-status", {
           message: "No se persistio la información",
           success: "error",
         });
       }
+      logger.debug([
+        `status: ${storageInfo.success ? 'exito' : 'fallido'}`,
+        'event: save-print',
+        `namespace ${namespace.name}`,
+        `dataToPrint: ${JSON.stringify(dataToPrint)}`
+      ], `Se intenta guardar un ticket`);
+      await emitNumberItemsQueue(namespace, storage)
     } catch (error) {
       namespace.emit("yures:save-print-status", {
         message: "El servidor a fallado, vuelve a intentarlo despues.",
         success: "error",
       });
-      logger.error(
-        `Fallo en ejecución en el servidor en ${namespace.name}: ${error}`
-      );
-    } finally {
-      namespace.emit(
-        "printer:number-items-queue",
-        await storage.numberItemsInQueue(namespace.name)
-      );
+      logger.error([
+        'event: save-print',
+        `namespace: ${namespace.name}`,
+        `error: ${error}`
+      ], "Ocurrio un error");
     }
   });
 
@@ -64,81 +64,81 @@ function YuresPrinterService(socket) {
         data: queue,
         status: "success",
       });
-      if (numberOfItemsPrintQueue > 0) {
-        logger.info(
-          `Se solicito cola de impresión y se respondio con ${numberOfItemsPrintQueue} tickets en ${namespace.name}`
-        );
-      } else {
-        logger.info(
-          `Se solicito cola de impresión, pero no hay tickets en cola. ${namespace.name}`
-        );
-      }
+      logger.debug([
+        `cola de impresión: ${numberOfItemsPrintQueue}`,
+        `namespace: ${namespace.name}`,
+        `event: printer-start`,
+      ], "Se solicita cola de impresión")
+      await emitNumberItemsQueue(namespace, storage);
     } catch (error) {
       namespace.emit("printer:load-queue", {
         message: `El servidor tuvo un fallo: ${error.toString()}`,
         data: {},
         status: "error",
       });
-      logger.error(
-        `Solicitud FALLIDA de extración de cola de impresión en ${namespace.name}`
-      );
-    } finally {
-      namespace.emit(
-        "printer:number-items-queue",
-        await storage.numberItemsInQueue(namespace.name)
-      );
+      logger.error([
+        `namespace: ${namespace.name}`,
+        `event: printer-start`,
+        `error: ${error}`
+      ], "Error solicitud cola de impresión");
     }
   });
 
   socket.on("printer:printed", async (data) => {
     try {
       const success = await storage.dequeue(namespace.name, data.key);
-      if (success) {
-        logger.info(
-          `Se libero un ticket de la cola de impresión en ${namespace.name}`
-        );
-      } else {
-        logger.warning(
-          `No se pudo liberar un ticket de la cola de impresión en ${namespace.name}`
-        );
-      }
+      logger.debug([
+        `status: ${success ? 'exito' : 'fallido'}`,
+        `namespace: ${namespace.name}`,
+        'event: printer-printed'
+      ], "Se intenta liberar un ticket de cola de impresión")
+      await emitNumberItemsQueue(namespace, storage);
     } catch (error) {
-      logger.error(
-        `Error del servidor en ejecución en ${namespace.name}: ${error}`
-      );
-    } finally {
-      namespace.emit(
-        "printer:number-items-queue",
-        await storage.numberItemsInQueue(namespace.name)
-      );
+      logger.error([
+        `event: printer-printed`,
+        `namespace: ${namespace.name}`,
+        `error: ${error}`
+      ], 'Ocurrio un error')
     }
   });
 
   socket.on("printer:release-queue", async () => {
     try {
       const success = await storage.emptyPrintQueue(namespace.name);
-      if (success) {
-        logger.info(`Se libero la cola de impresión para: ${namespace.name}`);
-      } else {
-        logger.warn(
-          `Memcached no pudo liberar la cola de impresión para ${namespace.name}`
-        );
-      }
+      logger.debug([
+        `status: ${success ? 'exito' : 'fallido'}`
+          `namespace: ${namespace.name}`,
+      ], "Se intenta liberar cola de impresión")
+      await emitNumberItemsQueue(namespace, storage)
     } catch (error) {
-      logger.error(
-        `No se pudo liberar cola de impresión en ${namespace.name} error: ${error}`
-      );
-    } finally {
-      namespace.emit(
-        "printer:number-items-queue",
-        await storage.numberItemsInQueue(namespace.name)
-      );
+      logger.error([
+        `namespace: ${namespace.name}`,
+        'event: printer-release-queue',
+        `error: ${error}`
+      ], "Error al liberar cola de impresión");
     }
   });
 
   socket.on("disconnect", () => {
-    logger.info(`Hubo una desconexión en ${namespace.name}`);
+    const instancesStorage = managerStorage.tryDetach(namespace.name)
+    logger.debug([
+      `namespace: ${namespace.name}`,
+      `instancias de storage: ${instancesStorage}`
+    ], 'Se desconecta un cliente')
   });
+}
+
+async function emitNumberItemsQueue(namespace, storage) {
+  const numberItemsInQueue = await storage.numberItemsInQueue(namespace.name)
+  namespace.emit(
+    "printer:number-items-queue",
+    numberItemsInQueue
+  );
+  logger.debug([
+    'event: save-print',
+    `namespace: ${namespace.name}`,
+    `Elementos en cola: ${numberItemsInQueue}`
+  ], "Se emite elementos en cola")
 }
 
 // yures:printer-{ruc}-{sufijo_sucursal}

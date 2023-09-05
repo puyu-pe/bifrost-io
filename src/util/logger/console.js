@@ -1,29 +1,55 @@
+const config = require('../../../config')
+
+
+const colors = {
+  red: "\x1b[31m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  purple: "\x1b[35m",
+  cyan: "\x1b[36m",
+  none: "\x1b[0m",
+}
 
 class ConsoleLogger {
 
   constructor(title) {
     this.count = 1;
     this.title = title;
+    this.env = config.NODE_ENV;
   }
 
-
-  info(message) {
-    this.logWrapper("info: " + message, '\x1b[34m');
+  info(message, context) {
+    this.logWrapper("info", message, colors.blue, context);
   }
 
-  error(message) {
-    this.logWrapper("error: " + message, '\x1b[31m');
+  error(message, context) {
+    this.logWrapper("error", message, colors.red, context);
   }
 
-  warning(message) {
-    this.logWrapper("warning: " + message, '\x1b[33m');
+  warning(message, context) {
+    this.logWrapper("warning", message, colors.yellow, context);
   }
 
-  logWrapper(message, color) {
-    console.log(`\n---------------------------- LOG ${this.title} N° ${this.count} ----------------------------`);
-    console.log('\x1b[36m',`Hora: ${formatDate(new Date())}`);
-    console.log(color, `\t-${message}`,"\x1b[0m");
-    console.log(`--------------------------------- end -------------------------------------------------------\n`);
+  debug(message, context) {
+    if (this.env === "development") {
+      this.logWrapper("debug", message, colors.purple, context);
+    }
+  }
+
+  logWrapper(level, message, color, context) {
+    if (context === undefined) {
+      context = "";
+    }
+    if (typeof message === "string") {
+      message = [message]
+    }
+    console.log(colors.cyan, `\nHora: ${formatDate(new Date())}`);
+    console.log(`LOG ${this.title} N° ${this.count}`);
+    console.log(color, `\n- ${level} ${context}:`);
+    for (let i = 0; i < message.length; ++i) {
+      console.log(color, "\t* ", colors.none, message[i]);
+    }
+    console.log(colors.cyan, `\n-- end --\n`, colors.none);
     this.count += 1;
   }
 }

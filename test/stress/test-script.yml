@@ -1,6 +1,6 @@
 config:
-  # target: "http://localhost:3001"
-  target: "https://bifrost-io.puyu.pe"
+  target: "http://localhost:3001"
+  # target: "https://bifrost-io.puyu.pe"
   payload:
     path: "namespaces.csv"
     fields:
@@ -10,24 +10,24 @@ config:
     - duration: 120 
       arrivalRate: 2
       rampTo: 8
-    - duration: 120 
-      arrivalRate: 8
-      rampTo: 15
-    - duration: 120 
-      arrivalRate: 15
-      rampTo: 20
-    # fases de carga pesada
-    - duration: 360 
-      arrivalRate: 25
-      rampTo: 50
-    - duration: 360
-      arrivalRate: 50
-      rampTo: 80
-    # fases de bajada
-    - duration: 120
-      arrivalRate: 60
-    - duration: 120
-      arrivalRate: 30
+    # - duration: 120 
+    #   arrivalRate: 8
+    #   rampTo: 15
+    # - duration: 120 
+    #   arrivalRate: 15
+    #   rampTo: 20
+    # # fases de carga pesada
+    # - duration: 360 
+    #   arrivalRate: 25
+    #   rampTo: 50
+    # - duration: 360
+    #   arrivalRate: 50
+    #   rampTo: 80
+    # # fases de bajada
+    # - duration: 120
+    #   arrivalRate: 60
+    # - duration: 120
+    #   arrivalRate: 30
 
   engines:
     socketio-v3: {}

@@ -5,7 +5,7 @@ const { yuresWaiterNamespacePattern, YuresWaiterService } = require('./services/
 const { ConsoleLogger } = require('./util/logger/console');
 const { io, httpServer } = require('./websocket');
 
-const logger = new ConsoleLogger("Servidor Bifrost.io");
+const logger = new ConsoleLogger("SERVIDOR BIFROST");
 const yuresWaiterNamespace = io.of(yuresWaiterNamespacePattern);
 const yuresPrinterNamespace = io.of(yuresPrinterNamespacePattern);
 
@@ -13,10 +13,17 @@ yuresWaiterNamespace.on("connection", YuresWaiterService)
 yuresPrinterNamespace.on("connection", YuresPrinterService);
 
 httpServer.on("onerror", (error) => {
-	logger.error(`A ocurrido un error en el servidor: ${error}`);
+  logger.error([
+    `location: httpServer.on("onerror")`
+    `error: ${error}`
+  ],'Error detectado');
 })
 
 const SERVER_PORT = config.PORT;
 httpServer.listen(SERVER_PORT, () => {
-  logger.info(`Bifrost START!!! NODE_ENV : ${config.NODE_ENV}, PORT: ${SERVER_PORT}`);
+  logger.info([
+    `NODE_ENV: ${config.NODE_ENV}`,
+    `PORT: ${config.PORT}`
+  ],'Bifrost GO!!!');
 });
+
