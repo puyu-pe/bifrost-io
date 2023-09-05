@@ -1,5 +1,5 @@
 const { Socket } = require('socket.io');
-const { ConsoleLogger } = require('../util/console-logger');
+const { ConsoleLogger } = require('../../util/logger/console');
 
 const logger = new ConsoleLogger("YURES WAITER SERVICE");
 

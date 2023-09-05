@@ -1,10 +1,9 @@
 require('dotenv').config();
 
-const { io, httpServer } = require('./server');
-const { YuresWaiterService, yuresWaiterNamespacePattern } = require('./services/yures-waiter-service');
-const { YuresPrinterService, yuresPrinterNamespacePattern } = require('./services/yures-printer-service');
-const { ConsoleLogger } = require('./util/console-logger');
-
+const { yuresPrinterNamespacePattern, YuresPrinterService } = require('./services/printing');
+const { yuresWaiterNamespacePattern, YuresWaiterService } = require('./services/yures-waiter');
+const { ConsoleLogger } = require('./util/logger/console');
+const { io, httpServer } = require('./websocket');
 
 const logger = new ConsoleLogger("Servidor Bifrost.io");
 const yuresWaiterNamespace = io.of(yuresWaiterNamespacePattern);

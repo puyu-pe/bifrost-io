@@ -4,7 +4,7 @@
   "description": "servidor generico de socket.io para todos los servicios de  Puyu",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev" : "node src/index.js"
   },
   "repository": {
     "type": "git",

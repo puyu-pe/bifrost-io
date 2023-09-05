@@ -1,6 +1,6 @@
 const { Socket } = require("socket.io");
-const { ConsoleLogger } = require("../util/console-logger");
-const { BifrostManagerStorage } = require("../util/manager-storage");
+const { ConsoleLogger } = require("../../util/logger/console");
+const { BifrostManagerStorage } = require("../../storage/memcached/manager");
 
 const EXPIRES_TIME_FROM_DATA = 300 * 60;
 const managerStorage = new BifrostManagerStorage(EXPIRES_TIME_FROM_DATA);
