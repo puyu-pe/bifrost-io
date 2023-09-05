@@ -4,7 +4,8 @@
   "description": "servidor generico de socket.io para todos los servicios de  Puyu",
   "main": "index.js",
   "scripts": {
-    "dev" : "node src/index.js"
+    "dev" : "NODE_ENV=development node src/index.js",
+    "prod": "pm2 start ecosystem.config.js"
   },
   "repository": {
     "type": "git",

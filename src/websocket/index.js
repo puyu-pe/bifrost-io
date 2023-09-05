@@ -1,6 +1,7 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { instrument } = require('@socket.io/admin-ui');
+const config = require('../../config.js');
 
 const MAX_LISTENERS = 20;
 
@@ -33,7 +34,7 @@ io.sockets.setMaxListeners(MAX_LISTENERS);
 
 instrument(io, {
 	auth: false,
-	mode: "production"
+	mode: config.NODE_ENV
 });
 
 module.exports = {
