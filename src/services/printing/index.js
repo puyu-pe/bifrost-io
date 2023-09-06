@@ -67,7 +67,7 @@ function YuresPrinterService(socket) {
       logger.debug([
         `cola de impresión: ${numberOfItemsPrintQueue}`,
         `namespace: ${namespace.name}`,
-        `event: printer-start`,
+        `event: printer-start`
       ], "Se solicita cola de impresión")
       await emitNumberItemsQueue(namespace, storage);
     } catch (error) {
@@ -106,8 +106,8 @@ function YuresPrinterService(socket) {
     try {
       const success = await storage.emptyPrintQueue(namespace.name);
       logger.debug([
-        `status: ${success ? 'exito' : 'fallido'}`
-          `namespace: ${namespace.name}`,
+        `status: ${success ? 'exito' : 'fallido'}`,
+        `namespace: ${namespace.name}`,
       ], "Se intenta liberar cola de impresión")
       await emitNumberItemsQueue(namespace, storage)
     } catch (error) {
