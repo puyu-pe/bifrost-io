@@ -9,7 +9,6 @@ const httpServer = createServer((req, res) => {
 	if (req.method === 'GET') {
 		res.statusCode = 200;
 		res.setHeader('Content-Type', 'text/plain');
-
 		res.end('Bifrost online');
 	} else {
 		res.statusCode = 405;
@@ -22,7 +21,7 @@ const io = new Server(httpServer, {
 		origin: [
 			"http://yubiz.puyu.pe",
 			"http://yubiz-development.puyu.pe",
-			"http://localhost:9091",
+			"http://localhost:9092",
 		],
 		methods: ["GET", "POST"]
 	}

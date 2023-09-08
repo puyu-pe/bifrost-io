@@ -4,7 +4,10 @@ module.exports = {
     script: 'src/index.js',
     restart_delay: 4000,
     env: {
-      NODE_ENV: "production",
+      NODE_ENV: "development",
     },
+		env_production: {
+			NODE_ENV: "production"
+		}
   }]
 };
