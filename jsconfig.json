@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // Versión de ECMAScript a la que se compila el código
+    "module": "commonjs", // Tipo de módulo (puede ser "commonjs", "es6", etc.)
+    "strict": true // Habilitar comprobaciones estrictas de tipo en TypeScript
+  },
+  "include": ["src/**/*"], // Patrón de inclusión de archivos que se deben analizar
+  "exclude": ["node_modules"] // Carpetas o archivos excluidos del análisis
+}

@@ -1,17 +1,20 @@
 const { Socket } = require('socket.io');
-const { ConsoleLogger } = require('../util/console-logger');
+const { ConsoleLogger } = require('../../util/logger/console');
 
-const logger = new ConsoleLogger("YURES WAITER SERVICE");
+const logger = new ConsoleLogger("SERVICIO YURES WAITER");
 
 /**
  * @param {Socket} socket 
  */
 function YuresWaiterService(socket) {
+
   const namespace = socket.nsp;
-  logger.info(`Nueva conexión en ${namespace.name}`);
+  logger.debug([
+    `namespace: ${namespace.name}`,
+  ], "Nueva Conexión");
   // evento que debe ser emitido por mesero
   socket.on("change-status-table", data => {
-    //emitir al cajero y los demas meseros
+    logger.debug(`data: ${JSON.stringify(data)}`, 'Se modifica estado mesa')
     socket.broadcast.emit("change-status-table", data);
   })
 

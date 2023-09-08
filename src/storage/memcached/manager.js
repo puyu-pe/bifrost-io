@@ -1,4 +1,5 @@
-const { BifrostPrinterStorage } = require("../memcached/printer-storage");
+const { BifrostPrinterStorage } = require(".");
+
 
 class BifrostManagerStorage {
   constructor(timeExpires) {
