@@ -5,6 +5,7 @@ const VALID_RUC_PATTERN = /^(\d{11})$/m;
 const VALID_BRANCH_PATTERN = /^(\d{1})$/m;
 
 const managerStorage = PrintingServiceContext.getManagerStorage();
+const logger = PrintingServiceContext.getLogger();
 const PrintingRouter = express.Router();
 
 PrintingRouter.get("/", (_, res) => {
@@ -19,16 +20,39 @@ PrintingRouter.post(
   validateNamespace,
   async (req, res) => {
     try {
+      logger.debug(
+        [
+          `event: controlador POST para api/v1/print`,
+          `namespace ${namespace}`,
+          `data: ${JSON.stringify(req.body.data)}`
+        ],
+        `Llega datos para imprimir`
+      );
       const namespace = req.namespace;
       const storage = managerStorage.provideStorage(namespace);
       const storageInfo = await storage.enqueue(namespace, req.body.data);
       if (!storageInfo.success)
         throw "memcached no pudo almacenar la data, memcached no funcionó";
-      managerStorage.tryDetach(namespace);
       res
         .status(200)
         .json(makeResponse("success", "Exito al almacenar el ticket", ""));
+      const instancesStorage = managerStorage.tryDetach(namespace);
+      logger.debug(
+        [
+          `namespace: ${namespace}`,
+          `instancias de storage: ${instancesStorage}`
+        ],
+        "Se logro almacenar correctamente la data para imprimir"
+      );
     } catch (error) {
+      logger.error(
+        [
+          `event: controlador POST para api/v1/print`,
+          `namespace: ${namespace}`,
+          `error: ${error}`,
+        ],
+        "Excepción al registrar un ticket"
+      );
       res
         .status(500)
         .json(makeResponse("error", "Excepción al guardar un ticket", error));

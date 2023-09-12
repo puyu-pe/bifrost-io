@@ -8,7 +8,7 @@ class BifrostPrinterStorage {
     this.timeExpires = timeExpires;
     this.enqueueMutex = new Mutex();
     this.dequeueMutex = new Mutex();
-    this.on_queue = () => { console.log("\non_queue not implemented\n") };
+    this.on_queue = () => { };
   }
 
   async enqueue(namespace, dataToPrint) {

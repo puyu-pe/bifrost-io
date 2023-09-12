@@ -26,8 +26,12 @@ function PrintingWorker(socket) {
 
   storage.setOnQueue(async (memObject) => {
     try {
+      logger.debug([
+        `namespace: ${namespace.name}`,
+        `memObject: ${JSON.stringify(memObject)}`,
+      ],"Se emite un ticket para imprimir");
       namespace.emit(emitters.printerEmitItem, {
-        message: "Se obtuvo un ticket para imprimir",
+        message: "Se emite un ticket para imprimir",
         data: memObject,
       });
       await emitNumberItemsQueue(namespace, storage);
