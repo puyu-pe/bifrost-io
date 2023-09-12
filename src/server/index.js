@@ -1,20 +1,13 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { instrument } = require('@socket.io/admin-ui');
+const express = require('express');
 const config = require('../../config.js');
 
-const MAX_LISTENERS = 20;
+const MAX_LISTENERS = 100;
 
-const httpServer = createServer((req, res) => {
-	if (req.method === 'GET') {
-		res.statusCode = 200;
-		res.setHeader('Content-Type', 'text/plain');
-		res.end('Bifrost online');
-	} else {
-		res.statusCode = 405;
-		res.end();
-	}
-});
+const app = express();
+const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
 	cors: {
@@ -31,8 +24,6 @@ const io = new Server(httpServer, {
 
 io.sockets.setMaxListeners(MAX_LISTENERS);
 
-
-
 instrument(io, {
 	auth: false,
 	mode: config.NODE_ENV
@@ -40,5 +31,6 @@ instrument(io, {
 
 module.exports = {
   io,
-  httpServer
+  httpServer,
+  app
 }
