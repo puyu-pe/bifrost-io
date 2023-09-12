@@ -2,8 +2,8 @@ const { ConsoleLogger } = require("../../util/logger/console");
 const { BifrostManagerStorage } = require('../../storage/memcached/manager');
 
 const EXPIRES_TIME_FROM_DATA = 300 * 60;
-const logger = undefined;
-const managerStorage = undefined;
+let logger = undefined;
+let managerStorage = undefined;
 
 class PrintingServiceContext {
   static getLogger() {

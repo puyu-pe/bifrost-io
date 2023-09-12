@@ -1,5 +1,5 @@
 const { Socket } = require("socket.io");
-const { PrintingServiceContext } = require("./context");
+const { PrintingServiceContext } = require("../../context");
 
 const managerStorage = PrintingServiceContext.getManagerStorage();
 const logger = PrintingServiceContext.getLogger();
@@ -19,7 +19,7 @@ const emitters = {
 /**
  * @param {Socket} socket
  */
-function PrintingService(socket) {
+function PrintingWorker(socket) {
   const namespace = socket.nsp;
   const storage = managerStorage.provideStorage(namespace.name);
   logger.debug([`namespace: ${namespace.name}`], "Nueva conexión");
@@ -148,9 +148,9 @@ async function emitNumberItemsQueue(namespace, storage) {
 }
 
 //printing-{ruc}-{sufijo_sucursal}
-const printingNamespacePattern = /^\/printing-(\d{11})(-\d{1})?$/m;
+const WorkerNamespacePattern = /^\/printing-(\d{11})(-\d{1})?$/m;
 
 module.exports = {
-  PrintingService,
-  printingNamespacePattern,
+  PrintingWorker,
+  WorkerNamespacePattern,
 };

@@ -8,16 +8,16 @@ const logger = new ConsoleLogger("PRINTING SERVICE");
 
 const events = {
   browserSaveItem: "browser:save-item",
-	printerGetPrintingQueue: "printer:get-printing-queue",
-	printerPrintItem: "printer:print-item",
-	printerReleaseQueue: "printer:release-queue"
+  printerGetPrintingQueue: "printer:get-printing-queue",
+  printerPrintItem: "printer:print-item",
+  printerReleaseQueue: "printer:release-queue",
 };
 
 const emitters = {
-	browserItemSaveStatus: "browser:item-save-status",
-	printerEmitItem: "printer:emit-item",
-	printerSendPrintingQueue: "printer:send-printing-queue",
-	printerSendNumberOfItemsInQueue: "printer:send-number-items-queue"
+  browserItemSaveStatus: "browser:item-save-status",
+  printerEmitItem: "printer:emit-item",
+  printerSendPrintingQueue: "printer:send-printing-queue",
+  printerSendNumberOfItemsInQueue: "printer:send-number-items-queue",
 };
 
 /**
@@ -181,7 +181,11 @@ async function emitNumberItemsQueue(namespace, storage) {
 //printing-{ruc}-{sufijo_sucursal}
 const printingNamespacePattern = /^\/printing-(\d{11})(-\d{1})?$/m;
 
+function init_printingwebsocket_service(io) {
+  const printingNamespace = io.of(printingNamespacePattern);
+  printingNamespace.on("connection", PrintingService);
+}
+
 module.exports = {
-  PrintingService,
-  printingNamespacePattern,
+	init_printingwebsocket_service
 };

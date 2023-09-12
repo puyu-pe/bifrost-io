@@ -14,11 +14,11 @@ class BifrostManagerStorage {
         instances: 0,
       });
     }
+    const store = this.storeSet.get(nameStorage);
     store.instances += 1;
     if(store.instances > 2){
       store.instances = 2;
     }
-    const store = this.storeSet.get(nameStorage);
     return store.storage;
   }
 
