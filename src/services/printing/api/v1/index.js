@@ -19,6 +19,7 @@ PrintingRouter.post(
   requestNamespace,
   validateNamespace,
   async (req, res) => {
+    const namespace = req.namespace;
     try {
       logger.debug(
         [
@@ -28,7 +29,6 @@ PrintingRouter.post(
         ],
         `Llega datos para imprimir`
       );
-      const namespace = req.namespace;
       const storage = managerStorage.provideStorage(namespace);
       const storageInfo = await storage.enqueue(namespace, req.body.data);
       if (!storageInfo.success)
