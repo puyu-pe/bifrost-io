@@ -7,7 +7,8 @@ const logger = PrintingServiceContext.getLogger();
 const events = {
   printerGetPrintingQueue: "printer:get-printing-queue",
   printerPrintItem: "printer:print-item",
-  printerReleaseQueue: "printer:release-queue"
+  printerReleaseQueue: "printer:release-queue",
+  printerRequestItemsInQueue: "printer:request-items-queue",
 };
 
 const emitters = {
@@ -29,7 +30,7 @@ function PrintingWorker(socket) {
       logger.debug([
         `namespace: ${namespace.name}`,
         `memObject: ${JSON.stringify(memObject)}`,
-      ],"Se emite un ticket para imprimir");
+      ], "Se emite un ticket para imprimir");
       namespace.emit(emitters.printerEmitItem, {
         message: "Se emite un ticket para imprimir",
         data: memObject,
@@ -40,7 +41,7 @@ function PrintingWorker(socket) {
         "event: printer-emit-item",
         `error: ${error}`,
         `namespace: ${namespace.name}`
-      ],"Excepción al emitir un ticket de la cola de impresión");
+      ], "Excepción al emitir un ticket de la cola de impresión");
     }
   });
 
@@ -125,6 +126,14 @@ function PrintingWorker(socket) {
       );
     }
   });
+
+  socket.on(events.printerRequestItemsInQueue, async () => {
+    logger.debug([
+      `namespace: ${namespace.name}`,
+      `event: ${events.printerRequestItemsInQueue}`,
+    ], "Solicitan items en cola");
+    await emitNumberItemsQueue(namespace, storage);
+  })
 
   socket.on("disconnect", () => {
     const instancesStorage = managerStorage.tryDetach(namespace.name);
