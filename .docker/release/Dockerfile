@@ -1,9 +1,8 @@
 FROM node:18.17.1-alpine3.18
-ARG BIFROST_FOLDER=bifrost-io
 ENV PM2_MODE=prod
 
 WORKDIR /service
-COPY ${BIFROST_FOLDER} .
+COPY ./ .
 
 RUN apk update \
   && apk add memcached
