@@ -33,8 +33,8 @@ jobs:
 
             -   name: Config env
                 run: |
-                    mv example-development.env development.env
-                    mv example-production.env production.env
+                    mv env/example-development.env env/development.env
+                    mv env/example-production.env env/production.env
 
             -   name: Compress files
                 run: zip -r archive.zip ./
