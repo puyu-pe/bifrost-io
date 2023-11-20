@@ -1,32 +1,22 @@
-const config = require('../config.js');
-const { printingNamespacePattern, PrintingService } = require('./services/printing/index.js');
+const config = require("../config.js");
 
-const { yuresPrinterNamespacePattern, YuresPrinterService } = require('./services/yures-printing/index.js');
-const { yuresWaiterNamespacePattern, YuresWaiterService } = require('./services/yures-waiter');
-const { ConsoleLogger } = require('./util/logger/console');
-const { io, httpServer } = require('./websocket');
+const {
+  init_printingwebsocket_service,
+} = require("./services/printing-websocket/index.js");
+const { init_yureswaiter_service } = require("./services/yures-waiter");
+const { init_printing_service } = require("./services/printing");
+const { ConsoleLogger } = require("./util/logger/console");
+const { io, httpServer, app } = require("./server");
 
-const logger = new ConsoleLogger("SERVIDOR BIFROST");
-const yuresWaiterNamespace = io.of(yuresWaiterNamespacePattern);
-const yuresPrinterNamespace = io.of(yuresPrinterNamespacePattern);
-const printingNamespace = io.of(printingNamespacePattern);
-
-yuresWaiterNamespace.on("connection", YuresWaiterService)
-yuresPrinterNamespace.on("connection", YuresPrinterService);
-printingNamespace.on("connection", PrintingService);
-
-httpServer.on("onerror", (error) => {
-  logger.error([
-    `location: httpServer.on("onerror")`
-    `error: ${error}`
-  ],'Error detectado');
-})
+init_printing_service(app, io);
+init_yureswaiter_service(io);
+// init_printingwebsocket_service(io);
 
 const SERVER_PORT = config.PORT;
 httpServer.listen(SERVER_PORT, () => {
-  logger.info([
-    `NODE_ENV: ${config.NODE_ENV}`,
-    `PORT: ${config.PORT}`
-  ],'Bifrost GO!!!');
+  const logger = new ConsoleLogger("SERVIDOR BIFROST");
+  logger.info(
+    [`NODE_ENV: ${config.NODE_ENV}`, `PORT: ${config.PORT}`],
+    "Bifrost GO!!!"
+  );
 });
-

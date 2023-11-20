@@ -4,7 +4,7 @@
   "description": "servidor generico de socket.io para todos los servicios de  Puyu",
   "main": "index.js",
   "scripts": {
-    "dev" : "pm2 start ecosystem.config.js",
+    "dev": "pm2 start ecosystem.config.js",
     "prod": "pm2 start ecosystem.config.js --env production"
   },
   "repository": {
@@ -21,7 +21,9 @@
   "dependencies": {
     "@socket.io/admin-ui": "^0.5.1",
     "async-mutex": "^0.4.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "memjs": "^1.3.1",
     "pm2": "^4.2.3",
     "socket.io": "^4.7.1"

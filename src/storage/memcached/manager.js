@@ -16,6 +16,9 @@ class BifrostManagerStorage {
     }
     const store = this.storeSet.get(nameStorage);
     store.instances += 1;
+    if(store.instances > 2){
+      store.instances = 2;
+    }
     return store.storage;
   }
 

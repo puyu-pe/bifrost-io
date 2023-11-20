@@ -8,6 +8,7 @@ class BifrostPrinterStorage {
     this.timeExpires = timeExpires;
     this.enqueueMutex = new Mutex();
     this.dequeueMutex = new Mutex();
+    this.on_queue = () => { };
   }
 
   async enqueue(namespace, dataToPrint) {
@@ -27,6 +28,7 @@ class BifrostPrinterStorage {
         JSON.stringify({ ...queue, ...memObject }),
         { expires: this.timeExpires }
       );
+      this.on_queue(memObject);
       return { success, key: created_at, memObject };
     });
   }
@@ -59,6 +61,10 @@ class BifrostPrinterStorage {
 
   async emptyPrintQueue(namespace) {
     return await this.memcached.delete(namespace);
+  }
+
+  setOnQueue(on_queue) {
+    this.on_queue = on_queue;
   }
 }
 
