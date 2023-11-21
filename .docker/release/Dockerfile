@@ -1,5 +1,5 @@
 FROM node:18.17.1-alpine3.18
-ENV PM2_MODE=prod
+ENV MODE=node_prod
 
 WORKDIR /service
 COPY ./ .
@@ -17,12 +17,11 @@ RUN touch start.sh && \
   echo  "#!/bin/bash"  >> start.sh &&\ 
   echo "echo 'Iniciando memcached...'" >> start.sh &&\
   echo "memcached -d -u daemon" >> start.sh  &&\
-  echo "echo 'Iniciando bifrost pm2 modo ${PM2_MODE}'" >> start.sh &&\
-  echo "npm run \${PM2_MODE}" >> start.sh &&\
-  echo "echo 'Monstrando logs de bifrost'" >> start.sh &&\
-  echo "npx pm2 logs" >> start.sh
+  echo "echo 'Iniciando bifrost modo ${MODE}'" >> start.sh &&\
+  echo "npm run \${MODE}" >> start.sh 
+
 RUN chmod +x start.sh 
 
-CMD sh start.sh ${PM2_MODE}
+CMD sh start.sh ${MODE}
 
 EXPOSE 3001
