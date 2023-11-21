@@ -77,6 +77,8 @@ jobs:
                     context: .
                     file: .docker/release/Dockerfile
                     push: true
-                    tags: ghcr.io/${{ github.repository }}/bifrost:${{ steps.extract-version.outputs.VERSION }}
+                    tags: |
+                      ghcr.io/${{ github.repository }}/bifrost:${{ steps.extract-version.outputs.VERSION }}
+                      ghcr.io/${{ github.repository }}/bifrost:latest
 
             -   run: echo "🍏 This job's status is ${{ job.status }}."
