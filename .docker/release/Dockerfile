@@ -1,4 +1,5 @@
 FROM node:18.17.1-alpine3.18
+LABEL org.opencontainers.image.source="https://github.com/puyu-pe/bifrost-io"
 ENV MODE=node_prod
 
 WORKDIR /service
