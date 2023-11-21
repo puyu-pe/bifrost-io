@@ -27,6 +27,7 @@ jobs:
 
             -   name: 🛠 NPM Install and build
                 run: |
+                    npm rm pm2
                     npm ci > /dev/null 2>&1
                     rm -fr public scripts test
                     rm appspec.yml README.md 
