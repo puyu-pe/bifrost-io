@@ -15,8 +15,7 @@ init_yuresmovement_service(io)
 // init_printingwebsocket_service(io);
 
 const SERVER_PORT = config.PORT;
-// WARN: remove specific ip before release
-httpServer.listen(SERVER_PORT, "192.168.1.52", () => {
+httpServer.listen(SERVER_PORT, () => {
   const logger = new ConsoleLogger("SERVIDOR BIFROST");
   logger.info(
     [`NODE_ENV: ${config.NODE_ENV}`, `PORT: ${config.PORT}`],
