@@ -6,8 +6,8 @@
   "scripts": {
     "node_dev": "NODE_ENV=development node src/index.js",
     "node_prod": "NODE_ENV=producition node src/index.js",
-    "dev": "NODE_ENV=development node src/index.js",
-    "prod": "NODE_ENV=production node src/index.js"
+    "dev": "pm2 start ecosystem.config.js",
+    "prod": "pm2 start ecosystem.config.js --env production"
   },
   "repository": {
     "type": "git",
