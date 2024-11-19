@@ -8,10 +8,12 @@ const { init_printing_service } = require("./services/printing");
 const { ConsoleLogger } = require("./util/logger/console");
 const { io, httpServer, app } = require("./server");
 const { init_yuresmovement_service } = require("./services/yures-movement/index.js");
+const { init_yuresitemslimit_service } = require("./services/yures-items/index.js");
 
 init_printing_service(app, io);
 init_yureswaiter_service(io);
 init_yuresmovement_service(io)
+init_yuresitemslimit_service(io)
 // init_printingwebsocket_service(io);
 
 const SERVER_PORT = config.PORT;
