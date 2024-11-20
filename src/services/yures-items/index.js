@@ -16,8 +16,8 @@ function YuresItemsLimitService(socket) {
   });
 }
 
-// yures:items-limit-{ruc}-{sufijo_sucursal}
-const yuresItemsLimitNamespacePattern = /^\/yures:items-limit-(\d{11})(-\d{1})?$/m;
+// yures:items-{ruc}-{sufijo_sucursal}
+const yuresItemsLimitNamespacePattern = /^\/yures:items-(\d{11})(-\d{1})?$/m;
 
 function init_yuresitemslimit_service(io) {
   const yuresItemsLimitNamespace = io.of(yuresItemsLimitNamespacePattern);
