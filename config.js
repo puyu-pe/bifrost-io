@@ -7,5 +7,6 @@ dotenv.config({
 
 module.exports = {
   NODE_ENV: process.env.NODE_ENV || 'development',
-  PORT: process.env.PORT || 3001
+  PORT: process.env.PORT || 3001,
+  PRINTING_SERVICE_ENABLED: process.env.PRINTING_SERVICE_ENABLED === 'true',
 }
